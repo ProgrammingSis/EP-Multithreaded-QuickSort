@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+//@brief Retorna a chave do registro i dependendo do tipo de chave escolhido
 int get_chave(int i, int num_regs, int tipo) {
     switch (tipo) {
     case 1:
@@ -38,18 +39,25 @@ int main(int argc, char **argv) {
     char *filename = argv[3];
     char *end;
 
-    int num_regs =  strtol(argv[1], &end, 10);
+    //Pega o número de registros presentes no arquivo que será lido
+    int num_regs =  strtol(argv[1], &end, 10);  //strtol transforma uma string em número (mesmo que esteja em array)
+
+    //Se o fim não estiver correto, com o sinal "\0" que marca o fim, o número de registros é inválido.
     if (*end != '\0') {
         printf("Numero de registros invalido: %s\n", argv[1]);
         return -1;
     }
+    //@brief Indica o tipo de ordem seguida no arquivo fornecido. 
+    //Seja em ordem crescente, descrescente ou aleatória.
     int tipo =  strtol(argv[2], &end, 10);
     if (*end != '\0' || tipo <= 0 || tipo > 3) {
         printf("Tipo invalido: %s\n", argv[2]);
         return -1;
     }
-
+//@brief Indica uma valor padrão (default) caso um número não seja definido 
+//como base para o gerador aleatório chamado srand().
     int semente = 2024;
+    
     if (argc >= 5) {
         semente = strtol(argv[4], &end, 10);
         if (*end != '\0') {
@@ -69,11 +77,13 @@ int main(int argc, char **argv) {
     printf("Semente: %d\n", semente);
     printf("\n");
     printf("Prosseguir? (s/n)\n");
+
     char resposta = getchar();
+
     if (resposta != 's') {
         exit(0);
     }
-
+    
     int fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH);
     int r;
     if (fd == -1) {
